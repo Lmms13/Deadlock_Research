@@ -44,13 +44,19 @@ mathServer (IsZero c1) =
       let (i, c2) = receive c1 in
       sendAndWait @Bool (i == 0) c2
 
-main : Int
-main = 
---     let (c,s) = new @(MathService) () in
---     fork @() (\_:() 1-> mathServer s);
---     mathClient 6 c
-    forkWith @MathService @() mathServer |> mathClient 7
-    -- mathClient 7 $ forkWith @MathService @() mathServer
+-- main : Int
+-- main = 
+-- --     let (c,s) = new @(MathService) () in
+-- --     fork @() (\_:() 1-> mathServer s);
+-- --     mathClient 6 c
+--     let c = forkWith @MathService @() mathServer in
+--     fork (\_: () -> mathClient 7 c);
+--     mathClient 8 c
+--     forkWith @MathService @() mathServer |> mathClient 7;
+--     forkWith @MathService @() mathServer |> mathClient 7;
+--     forkWith @MathService @() mathServer |> mathClient 8
+    
+--     -- mathClient 7 $ forkWith @MathService @() mathServer
 
 -- type IntStream = *!Int
 
@@ -67,3 +73,24 @@ main =
 --   let c = forkWith @IntStream @() consume in
 --   fork (\_: () -> produce 1 c);
 --   produce 2 c
+
+type NewInt = *!Int
+
+sender : Int -> NewInt -> Diverge
+sender i n = n |> send i |> sender i
+
+receiver : Int -> dualof NewInt -> Diverge
+receiver i c = 
+    let n = receive_ @Int c in 
+    if n == i 
+    then print @Int n; receiver i  c
+    else receiver (if i == 1 then 3 else i - 1) c
+
+
+
+main : Diverge
+main =
+  let c = forkWith @NewInt @() (receiver 3) in
+  fork (\_: () -> sender 1 c);
+  fork (\_: () -> sender 2 c);
+  sender 3 c
