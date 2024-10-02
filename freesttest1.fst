@@ -74,23 +74,45 @@ mathServer (IsZero c1) =
 --   fork (\_: () -> produce 1 c);
 --   produce 2 c
 
-type NewInt = *!Int
+-- type NewInt = *!Int
 
-sender : Int -> NewInt -> Diverge
-sender i n = n |> send i |> sender i
+-- sender : Int -> NewInt -> Diverge
+-- sender i n = n |> send i |> sender i
 
-receiver : Int -> dualof NewInt -> Diverge
-receiver i c = 
-    let n = receive_ @Int c in 
-    if n == i 
-    then print @Int n; receiver i  c
-    else receiver (if i == 1 then 3 else i - 1) c
+-- receiver : Int -> dualof NewInt -> Diverge
+-- receiver i c = 
+--     let n = receive_ @Int c in 
+--     if n == i 
+--     then print @Int n; receiver i  c
+--     else receiver (if i == 1 then 3 else i - 1) c
 
 
 
-main : Diverge
+-- main : Diverge
+-- main =
+--   let c = forkWith @NewInt @() (receiver 3) in
+--   fork (\_: () -> sender 1 c);
+--   fork (\_: () -> sender 2 c);
+--   sender 3 c
+
+
+eat : !Bool;Close -> !Bool;Close 1-> ()
+eat left right = 
+  print @String "Philosopher is eating.";
+  left |> send True |> close;
+  right |> send True |> close
+
+
+think : ?Bool;Wait -> ?Bool;Wait 1-> Bool
+think left right = 
+  print @String "Philosopher is thinking.";
+  let l = left |> receiveAndWait @Bool in
+  let r = right |> receiveAndWait @Bool in
+  l && r
+
+main : Bool
 main =
-  let c = forkWith @NewInt @() (receiver 3) in
-  fork (\_: () -> sender 1 c);
-  fork (\_: () -> sender 2 c);
-  sender 3 c
+  let (e1, t1) = new @(!Bool;Close) () in
+  let (e2, t2) = new @(!Bool;Close) () in
+  fork @() (\_:()1-> eat e1 e2);
+  think t1 t2
