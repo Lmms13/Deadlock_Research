@@ -146,29 +146,33 @@ philosopher : ()
 philosopher = 
   let (lf1, lf2) = new @Fork () in
   let (rf1, rf2) = new @Fork () in
-  fork @Bool (\_:()1-> think lf2 rf2);
-  eat lf1 rf1
+  fork @() (\_:()1-> take lf1);
+  fork @() (\_:()1-> take rf1);
+  think lf2 rf2
+  --how to give 2 philosophers the same fork if the channels are consumed?
 
 
-eat : Fork -> Fork 1-> ()
-eat left right = 
-  print @String "Philosopher is eating.";
-  left |> send True |> close;
-  right |> send True |> close
+take : Fork -> ()
+take f = f |> send True |> close
 
 
-think : dualof Fork -> dualof Fork 1-> Bool
+think : dualof Fork -> dualof Fork 1-> ()
 think left right = 
   print @String "Philosopher is thinking.";
   let l = left |> receiveAndWait @Bool in
   let r = right |> receiveAndWait @Bool in
-  l && r
+  if l && r
+  then print @String "Philosopher is eating."
+  else think left right
+--how to pass the channels through recursion?
+
 
 main : ()
 main =
   philosopher;
   philosopher;
   philosopher
+
 
   
 
