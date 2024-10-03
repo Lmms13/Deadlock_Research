@@ -3,6 +3,8 @@ import signal
 import sys
 import time
 
+#test
+
 class Philosopher(threading.Thread):
     def __init__(self, name, left_fork, right_fork, stop_event):
         threading.Thread.__init__(self)
