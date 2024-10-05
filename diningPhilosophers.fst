@@ -165,9 +165,8 @@ dine id left right =
   let r = send () right in
   -- send () left;
   -- send () right;
-  putStr "Philosopher ";
-  putStr (show @Int id);
-  putStrLn " is eating.";
+  putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is eating.");
+  --putStrLn " is eating.";
   -- print @String "Philosopher is eating.";
   sendAndClose @() () l;
   sendAndClose @() () r
@@ -189,9 +188,10 @@ think id left right =
   -- print @String "Philosopher is thinking.";
   let (i,l) = receive left in
   let (j,r) = receive right in 
-  putStr "Philosopher ";
-  putStr (show @Int id);
-  putStrLn " is thinking.";
+  putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is thinking.");
+  -- putStr "Philosopher ";
+  -- putStr (show @Int id);
+  -- putStrLn " is thinking.";
   receiveAndWait @() l;
   receiveAndWait @() r
   -- receiveAndWait @() left;
