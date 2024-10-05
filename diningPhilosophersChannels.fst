@@ -1,4 +1,4 @@
-type Fork = +{ Take : !();?(), Put : !();?(), Leave : Close }
+type Fork = +{ Take : !();?();Fork, Put : !();?();Fork, Leave : Close }
 
 philosopher : Int -> Fork -> Fork -> dualof Fork -> dualof Fork -> ()
 philosopher id left right = 
