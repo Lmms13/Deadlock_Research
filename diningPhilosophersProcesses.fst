@@ -13,12 +13,15 @@ philosopher id left right =
 
 fork_ : dualof ForkExchange -> dualof ForkExchange 1-> ()
 fork_ left right =
-    let (i,left) = receive left in
-    let left = send () left in
-    receiveAndWait @() left;
     let (j,right) = receive right in
     let right = send () right in
-    receiveAndWait @() right 
+    receiveAndWait @() right; 
+    let (i,left) = receive left in
+    let left = send () left in
+    receiveAndWait @() left
+    --the fork either replies to the philosopher to its left or to its right 
+    --first, in this implementation, it replies to the one to its right first,
+    --since the philosophers try to grab their left fork first.
 
 main : ()
 main =
