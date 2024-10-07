@@ -13,10 +13,10 @@ philosopher id left right =
 
 fork_ : dualof ForkExchange -> dualof ForkExchange 1-> ()
 fork_ left right =
-    let (j,right) = receive right in
+    let (_,right) = receive right in
     let right = send () right in
     receiveAndWait @() right; 
-    let (i,left) = receive left in
+    let (_,left) = receive left in
     let left = send () left in
     receiveAndWait @() left
     --the fork either replies to the philosopher to its left or to its right 
