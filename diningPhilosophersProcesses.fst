@@ -1,6 +1,6 @@
 type ForkExchange = !();?();!();Close
 
-philosopher : Int -> ForkExchange -> ForkExchange 1-> ()
+philosopher : Int -> ForkExchange 1-> ForkExchange 1-> ()
 philosopher id left right =
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is thinking.");
     let l = send () left in
