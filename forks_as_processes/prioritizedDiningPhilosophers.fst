@@ -13,8 +13,8 @@ philosopher id left right =
 
 fork_ : dualof ForkExchange -> dualof ForkExchange 1-> ()
 fork_ left right =
-    let (idr,right) = receive right in
-    let (idl,left) = receive left in
+    let (idr, right) = receive right in
+    let (idl, left) = receive left in
     if(idl < idr) 
     then
         let left = send () left in
@@ -35,9 +35,9 @@ main =
     let (p4, f4) = new @ForkExchange () in
     let (p5, f5) = new @ForkExchange () in
     let (p6, f6) = new @ForkExchange () in
-    fork @() (\_ : () 1-> fork_ f1 f2);
-    fork @() (\_ : () 1-> fork_ f3 f4);
-    fork @() (\_ : () 1-> fork_ f5 f6);
+    fork @() (\_ : () 1-> fork_ f2 f1);
+    fork @() (\_ : () 1-> fork_ f4 f3);
+    fork @() (\_ : () 1-> fork_ f6 f5);
     fork @() (\_ : () 1-> philosopher 1 p1 p6);
     fork @() (\_ : () 1-> philosopher 2 p2 p3);
     philosopher 3 p4 p5

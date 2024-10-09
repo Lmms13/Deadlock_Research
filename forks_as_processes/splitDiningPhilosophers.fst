@@ -12,7 +12,7 @@ philosopher id left right =
     sendAndClose @() () r
 
 fork_ : dualof ForkExchange -> dualof ForkExchange 1-> ()
-fork_ right left =
+fork_ left right =
     let (_,right) = receive right in
     let right = send () right in
     receiveAndWait @() right; 
@@ -40,8 +40,8 @@ main =
     let (p4, f4) = new @ForkExchange () in
     let (p5, f5) = new @ForkExchange () in
     let (p6, f6) = new @ForkExchange () in
-    fork @() (\_ : () 1-> fork_ f1 f2);
-    fork @() (\_ : () 1-> fork_ f3 f4);
+    fork @() (\_ : () 1-> fork_ f2 f1);
+    fork @() (\_ : () 1-> fork_ f4 f3);
     fork @() (\_ : () 1-> forkLeft f6);
     fork @() (\_ : () 1-> forkRight f5);
     fork @() (\_ : () 1-> philosopher 1 p1 p6);
