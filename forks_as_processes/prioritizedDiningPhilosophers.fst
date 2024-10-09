@@ -1,33 +1,31 @@
-type ForkExchange = !();?();!();Close
+type ForkExchange = !Int;?();!();Close
 
 philosopher : Int -> ForkExchange 1-> ForkExchange 1-> ()
 philosopher id left right =
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is thinking.");
-    let l = send () left in
-    let r = send () right in
+    let l = send id left in
+    let r = send id right in
     let (_, l) = receive l in
     let (_, r) = receive r in
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is eating.");
     sendAndClose @() () l;
     sendAndClose @() () r
 
-fork_ :dualof ForkExchange -> dualof ForkExchange 1-> ()
-fork_ right left =
-    let (_,right) = receive right in
-    let right = send () right in
-    receiveAndWait @() right; 
-    let (_,left) = receive left in
-    let left = send () left in
-    receiveAndWait @() left
-
-oppositeFork : dualof ForkExchange -> dualof ForkExchange 1-> ()
-oppositeFork right left =
-    let (_,left) = receive left in
-    let left = send () left in
-    receiveAndWait @() left;
-    let (_,right) = receive right in
-    let right = send () right in
-    receiveAndWait @() right
+fork_ : dualof ForkExchange -> dualof ForkExchange 1-> ()
+fork_ left right =
+    let (idr,right) = receive right in
+    let (idl,left) = receive left in
+    if(idl < idr) 
+    then
+        let left = send () left in
+        receiveAndWait @() left;
+        let right = send () right in
+        receiveAndWait @() right
+    else
+        let right = send () right in
+        receiveAndWait @() right;
+        let left = send () left in
+        receiveAndWait @() left
 
 main : ()
 main =
@@ -39,7 +37,7 @@ main =
     let (p6, f6) = new @ForkExchange () in
     fork @() (\_ : () 1-> fork_ f1 f2);
     fork @() (\_ : () 1-> fork_ f3 f4);
-    fork @() (\_ : () 1-> oppositeFork f5 f6);
+    fork @() (\_ : () 1-> fork_ f5 f6);
     fork @() (\_ : () 1-> philosopher 1 p1 p6);
     fork @() (\_ : () 1-> philosopher 2 p2 p3);
     philosopher 3 p4 p5

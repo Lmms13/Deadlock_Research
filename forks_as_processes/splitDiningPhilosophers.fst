@@ -11,8 +11,8 @@ philosopher id left right =
     sendAndClose @() () l;
     sendAndClose @() () r
 
-fork_ : Int -> dualof ForkExchange -> dualof ForkExchange 1-> ()
-fork_ id right left =
+fork_ : dualof ForkExchange -> dualof ForkExchange 1-> ()
+fork_ right left =
     let (_,right) = receive right in
     let right = send () right in
     receiveAndWait @() right; 
@@ -20,14 +20,14 @@ fork_ id right left =
     let left = send () left in
     receiveAndWait @() left
 
-forkLeft : Int -> dualof ForkExchange 1-> ()
-forkLeft id left =
+forkLeft : dualof ForkExchange 1-> ()
+forkLeft left =
     let (_,left) = receive left in
     let left = send () left in
     receiveAndWait @() left
 
-forkRight : Int -> dualof ForkExchange 1-> ()
-forkRight id right =
+forkRight : dualof ForkExchange 1-> ()
+forkRight right =
     let (_,right) = receive right in
     let right = send () right in
     receiveAndWait @() right
@@ -40,10 +40,10 @@ main =
     let (p4, f4) = new @ForkExchange () in
     let (p5, f5) = new @ForkExchange () in
     let (p6, f6) = new @ForkExchange () in
-    fork @() (\_ : () 1-> fork_ 1 f1 f2);
-    fork @() (\_ : () 1-> fork_ 2 f3 f4);
-    fork @() (\_ : () 1-> forkLeft 3 f6);
-    fork @() (\_ : () 1-> forkRight 3 f5);
+    fork @() (\_ : () 1-> fork_ f1 f2);
+    fork @() (\_ : () 1-> fork_ f3 f4);
+    fork @() (\_ : () 1-> forkLeft f6);
+    fork @() (\_ : () 1-> forkRight f5);
     fork @() (\_ : () 1-> philosopher 1 p1 p6);
     fork @() (\_ : () 1-> philosopher 2 p2 p3);
     philosopher 3 p4 p5
