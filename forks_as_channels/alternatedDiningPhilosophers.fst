@@ -5,25 +5,25 @@ philosopher id left right =
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is thinking.");
     if(mod id 2 == 0) 
     then
-        let l = send id left in
-        let (_,l) = receive l in
-        let (_,r) = receive right in
-        let r = send () r in
+        let left = send id left in
+        let (_,left) = receive left in
+        let (_,right) = receive right in
+        let right = send () right in
         putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is eating.");
         -- sendAndClose @() () l;
         -- receiveAndWait @() r
-        close l;
-        wait r
+        close left;
+        wait right
     else
-        let (_,r) = receive right in
-        let r = send () r in
-        let l = send id left in
-        let (_,l) = receive l in
+        let (_,right) = receive right in
+        let right = send () right in
+        let left = send id left in
+        let (_,left) = receive left in
         putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is eating.");
         -- sendAndClose @() () l;
         -- receiveAndWait @() r
-        wait r;
-        close l
+        wait right;
+        close left
 
 main : ()
 main = 

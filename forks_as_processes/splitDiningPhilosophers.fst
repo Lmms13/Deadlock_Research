@@ -3,13 +3,13 @@ type ForkExchange = !();?();Close
 philosopher : Int -> ForkExchange 1-> ForkExchange 1-> ()
 philosopher id left right =
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is thinking.");
-    let l = send () left in
-    let r = send () right in
-    let (_, l) = receive l in
-    let (_, r) = receive r in
+    let left = send () left in
+    let right = send () right in
+    let (_, left) = receive left in
+    let (_, right) = receive right in
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is eating.");
-    close l;
-    close r
+    close left;
+    close right
     -- sendAndClose @() () l;
     -- sendAndClose @() () r
 

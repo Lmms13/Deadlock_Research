@@ -3,15 +3,15 @@ type Fork = !();?();Close
 philosopher : Int -> Fork -> dualof Fork 1-> ()
 philosopher id left right = 
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is thinking.");
-    let l = send () left in
-    let (_,r) = receive right in
-    let (_,l) = receive l in
-    let r = send () r in
+    let left = send () left in
+    let (_,right) = receive right in
+    let (_,left) = receive left in
+    let right = send () right in
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is eating.");
     -- sendAndClose @() () l;
     -- receiveAndWait @() r
-    close l;
-    wait r
+    close left;
+    wait right
 
 splitPhilosopher : Int -> Fork -> dualof Fork 1-> ()
 splitPhilosopher id left right = 
@@ -22,17 +22,17 @@ splitPhilosopher id left right =
 
 leftHand : Fork -> ()
 leftHand left = 
-    let l = send () left in
-    let (_,l) = receive l in
+    let left = send () left in
+    let (_,left) = receive left in
     -- sendAndClose @() () l
-    close l
+    close left
 
 rightHand : dualof Fork -> ()
 rightHand right = 
-    let (_,r) = receive right in
-    let r = send () r in
+    let (_,right) = receive right in
+    let right = send () right in
     -- receiveAndWait @() r
-    wait r
+    wait right
 
 main : ()
 main = 
