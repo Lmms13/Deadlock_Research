@@ -5,34 +5,28 @@ philosopher id left right =
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is thinking.");
     let left = send id left in
     let right = send id right in
-    let (_, left) = receive left in
-    let (_, right) = receive right in
+    let (_,left) = receive left in
+    let (_,right) = receive right in
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is eating.");
-    -- sendAndClose @() () l;
-    -- sendAndClose @() () r
     close left;
     close right
 
 fork_ : dualof ForkExchange -> dualof ForkExchange 1-> ()
 fork_ left right =
-    let (id, right) = receive right in
-    if(mod id 2 == 0) 
+    let (id,right) = receive right in
+    if(even id) 
     then
         let right = send () right in
         wait right;
-        -- receiveAndWait @() right;
-        let (_ ,left) = receive left in
+        let (_,left) = receive left in
         let left = send () left in
         wait left
-        -- receiveAndWait @() left
     else
-        let (_ ,left) = receive left in
+        let (_,left) = receive left in
         let left = send () left in
         wait left;
-        -- receiveAndWait @() left;
         let right = send () right in
         wait right
-        -- receiveAndWait @() right
 
 main : ()
 main =

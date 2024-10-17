@@ -10,19 +10,15 @@ philosopher id left right =
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is eating.");
     close left;
     close right
-    -- sendAndClose @() () l;
-    -- sendAndClose @() () r
 
 fork_ :dualof ForkExchange -> dualof ForkExchange 1-> ()
 fork_ left right =
     let (_,right) = receive right in
     let right = send () right in
     wait right;
-    -- receiveAndWait @() right; 
     let (_,left) = receive left in
     let left = send () left in
     wait left
-    -- receiveAndWait @() left
 
 -- oppositeFork : dualof ForkExchange -> dualof ForkExchange 1-> ()
 -- oppositeFork left right =

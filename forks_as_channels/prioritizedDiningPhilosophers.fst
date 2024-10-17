@@ -10,16 +10,12 @@ philosopher id left right =
         let (_,left) = receive left in
         let right = send () right in
         putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is eating.");
-        -- sendAndClose @() () l;
-        -- receiveAndWait @() r
         close left;
         wait right
     else
         let right = send () right in
         let (_,left) = receive left in
         putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is eating.");
-        -- sendAndClose @() () l;
-        -- receiveAndWait @() r
         close left;
         wait right
 
