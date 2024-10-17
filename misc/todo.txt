@@ -1,4 +1,4 @@
-limpar código
+X limpar código
 menus
 recursão
 aquela cena de meter fork em tudo e ter a main como manager
