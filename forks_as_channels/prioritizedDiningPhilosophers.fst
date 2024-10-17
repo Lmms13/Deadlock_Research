@@ -26,4 +26,5 @@ main =
     let (fw3, fr3) = new @Fork () in
     fork @() (\_:()1-> philosopher 1 fw1 fr3);
     fork @() (\_:()1-> philosopher 2 fw2 fr1);
-    philosopher 3 fw3 fr2
+    philosopher 3 fw3 fr2;
+    print @String "Done!"

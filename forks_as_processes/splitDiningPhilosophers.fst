@@ -46,5 +46,6 @@ main =
     fork @() (\_ : () 1-> forkRight f5);
     fork @() (\_ : () 1-> philosopher 1 p1 p6);
     fork @() (\_ : () 1-> philosopher 2 p2 p3);
-    philosopher 3 p4 p5
+    philosopher 3 p4 p5;
+    print @String "Done!"
 
