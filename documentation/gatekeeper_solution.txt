@@ -1,0 +1,11 @@
+using a cyclical topology that relies on linear channels,
+the typical gatekeeper (or waiter) solution is redundant.
+If every fork or philosopher always looks to the same side first,
+not having one of the philosophers at the table will result in
+the program getting stuck waiting for an answer from a philosopher
+that still doesn't exist. As such, we need to force one of the 
+forks/philosophers to look to the opposite side first. This will
+break the symetry and solve the deadlock, but it will do it whether
+or not all philosophers are at the table. This means that, using
+linear channels, limiting the amount of philosophers at the table
+doesn't actually solve anything. 
