@@ -1,4 +1,4 @@
-type ForkExchange = !Int;?();!();Close
+type ForkExchange = !Int;?();Close
 
 philosopher : Int -> ForkExchange 1-> ForkExchange 1-> ()
 philosopher id left right =
@@ -8,8 +8,10 @@ philosopher id left right =
     let (_, l) = receive l in
     let (_, r) = receive r in
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is eating.");
-    sendAndClose @() () l;
-    sendAndClose @() () r
+    -- sendAndClose @() () l;
+    -- sendAndClose @() () r
+    close l;
+    close r
 
 fork_ : dualof ForkExchange -> dualof ForkExchange 1-> ()
 fork_ left right =
@@ -18,14 +20,18 @@ fork_ left right =
     if(idl < idr) 
     then
         let left = send () left in
-        receiveAndWait @() left;
+        wait left;
+        -- receiveAndWait @() left;
         let right = send () right in
-        receiveAndWait @() right
+        wait right
+        -- receiveAndWait @() right
     else
         let right = send () right in
-        receiveAndWait @() right;
+        -- receiveAndWait @() right;
+        wait right;
         let left = send () left in
-        receiveAndWait @() left
+        -- receiveAndWait @() left
+        wait left
 
 main : ()
 main =

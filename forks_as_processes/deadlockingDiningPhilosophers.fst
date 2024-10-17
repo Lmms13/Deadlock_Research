@@ -1,4 +1,4 @@
-type ForkExchange = !();?();!();Close
+type ForkExchange = !();?();Close
 
 philosopher : Int -> ForkExchange 1-> ForkExchange 1-> ()
 philosopher id left right =
@@ -8,17 +8,21 @@ philosopher id left right =
     let (_, l) = receive l in
     let (_, r) = receive r in
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is eating.");
-    sendAndClose @() () l;
-    sendAndClose @() () r
+    close l;
+    close r
+    -- sendAndClose @() () l;
+    -- sendAndClose @() () r
 
 fork_ : dualof ForkExchange -> dualof ForkExchange 1-> ()
 fork_ left right =
     let (_,right) = receive right in
     let right = send () right in
-    receiveAndWait @() right; 
+    wait right;
+    -- receiveAndWait @() right; 
     let (_,left) = receive left in
     let left = send () left in
-    receiveAndWait @() left
+    wait left
+    -- receiveAndWait @() left
     --the fork either replies to the philosopher to its left or to its right 
     --first, in this implementation, it replies to the one to its right first,
     --since the philosophers try to grab their left fork first.

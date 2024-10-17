@@ -1,4 +1,4 @@
-type Fork = !();?();!();Close
+type Fork = !();?();Close
 
 philosopher : Int -> Fork -> dualof Fork 1-> ()
 philosopher id left right = 
@@ -8,8 +8,10 @@ philosopher id left right =
     let (_,l) = receive l in
     let r = send () r in
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is eating.");
-    sendAndClose @() () l;
-    receiveAndWait @() r
+    -- sendAndClose @() () l;
+    -- receiveAndWait @() r
+    close l;
+    wait r
 
 splitPhilosopher : Int -> Fork -> dualof Fork 1-> ()
 splitPhilosopher id left right = 
@@ -22,13 +24,15 @@ leftHand : Fork -> ()
 leftHand left = 
     let l = send () left in
     let (_,l) = receive l in
-    sendAndClose @() () l
+    -- sendAndClose @() () l
+    close l
 
 rightHand : dualof Fork -> ()
 rightHand right = 
     let (_,r) = receive right in
     let r = send () r in
-    receiveAndWait @() r
+    -- receiveAndWait @() r
+    wait r
 
 main : ()
 main = 
