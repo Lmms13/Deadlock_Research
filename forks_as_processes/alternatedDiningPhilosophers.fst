@@ -14,19 +14,19 @@ philosopher id left right =
 fork_ : dualof ForkExchange -> dualof ForkExchange 1-> ()
 fork_ left right =
     let (id,right) = receive right in
+    let (_,left) = receive left in
     if(even id) 
     then
-        let right = send () right in
-        wait right;
-        let (_,left) = receive left in
-        let left = send () left in
-        wait left
+        unitaryFork right;
+        unitaryFork left
     else
-        let (_,left) = receive left in
-        let left = send () left in
-        wait left;
-        let right = send () right in
-        wait right
+        unitaryFork left;
+        unitaryFork right
+
+unitaryFork : !();Wait -> ()
+unitaryFork f =
+    let f = send () f in
+    wait f
 
 main : ()
 main =
@@ -36,11 +36,19 @@ main =
     let (p4, f4) = new @ForkExchange () in
     let (p5, f5) = new @ForkExchange () in
     let (p6, f6) = new @ForkExchange () in
+    let (p7, f7) = new @ForkExchange () in
+    let (p8, f8) = new @ForkExchange () in
+    let (p9, f9) = new @ForkExchange () in
+    let (p10, f10) = new @ForkExchange () in
     fork @() (\_ : () 1-> fork_ f1 f2);
     fork @() (\_ : () 1-> fork_ f3 f4);
     fork @() (\_ : () 1-> fork_ f5 f6);
-    fork @() (\_ : () 1-> philosopher 1 p1 p6);
+    fork @() (\_ : () 1-> fork_ f7 f8);
+    fork @() (\_ : () 1-> fork_ f9 f10);
+    fork @() (\_ : () 1-> philosopher 1 p1 p10);
     fork @() (\_ : () 1-> philosopher 2 p2 p3);
-    philosopher 3 p4 p5;
+    fork @() (\_ : () 1-> philosopher 3 p4 p5);
+    fork @() (\_ : () 1-> philosopher 4 p6 p7);
+    philosopher 5 p8 p9;
     print @String "Done!"
 

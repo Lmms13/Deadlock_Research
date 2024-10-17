@@ -17,15 +17,16 @@ fork_ left right =
     let (idl, left) = receive left in
     if(idl < idr) 
     then
-        let left = send () left in
-        wait left;
-        let right = send () right in
-        wait right
+        unitaryFork left;
+        unitaryFork right
     else
-        let right = send () right in
-        wait right;
-        let left = send () left in
-        wait left
+        unitaryFork right;
+        unitaryFork left
+
+unitaryFork : !();Wait -> ()
+unitaryFork f =
+    let f = send () f in
+    wait f
 
 main : ()
 main =

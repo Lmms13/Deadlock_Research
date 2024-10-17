@@ -20,17 +20,6 @@ fork_ left right =
     let left = send () left in
     wait left
 
--- oppositeFork : dualof ForkExchange -> dualof ForkExchange 1-> ()
--- oppositeFork left right =
---     let (_,left) = receive left in
---     let left = send () left in
---     wait left;
---     -- receiveAndWait @() left;
---     let (_,right) = receive right in
---     let right = send () right in
---     wait right
---     -- receiveAndWait @() right
-
 main : ()
 main =
     let (p1, f1) = new @ForkExchange () in
@@ -42,7 +31,6 @@ main =
     fork @() (\_ : () 1-> fork_ f2 f1);
     fork @() (\_ : () 1-> fork_ f4 f3);
     fork @() (\_ : () 1-> fork_ f5 f6); --here, the forks are passed in the opposite order
-    -- fork @() (\_ : () 1-> oppositeFork f6 f5);
     fork @() (\_ : () 1-> philosopher 1 p1 p6);
     fork @() (\_ : () 1-> philosopher 2 p2 p3);
     philosopher 3 p4 p5;

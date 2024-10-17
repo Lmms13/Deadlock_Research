@@ -13,24 +13,14 @@ philosopher id left right =
 
 fork_ : dualof ForkExchange -> dualof ForkExchange 1-> ()
 fork_ left right =
-    let (_,right) = receive right in
-    let right = send () right in
-    wait right; 
-    let (_,left) = receive left in
-    let left = send () left in
-    wait left
+    unitaryFork right;
+    unitaryFork left
 
-forkLeft : dualof ForkExchange 1-> ()
-forkLeft left =
-    let (_,left) = receive left in
-    let left = send () left in
-    wait left
-
-forkRight : dualof ForkExchange 1-> ()
-forkRight right =
-    let (_,right) = receive right in
-    let right = send () right in
-    wait right
+unitaryFork : dualof ForkExchange -> ()
+unitaryFork f =
+    let (_,f) = receive f in
+    let f = send () f in
+    wait f
 
 main : ()
 main =
@@ -42,8 +32,8 @@ main =
     let (p6, f6) = new @ForkExchange () in
     fork @() (\_ : () 1-> fork_ f2 f1);
     fork @() (\_ : () 1-> fork_ f4 f3);
-    fork @() (\_ : () 1-> forkLeft f6);
-    fork @() (\_ : () 1-> forkRight f5);
+    fork @() (\_ : () 1-> unitaryFork f6); --left
+    fork @() (\_ : () 1-> unitaryFork f5); --right
     fork @() (\_ : () 1-> philosopher 1 p1 p6);
     fork @() (\_ : () 1-> philosopher 2 p2 p3);
     philosopher 3 p4 p5;

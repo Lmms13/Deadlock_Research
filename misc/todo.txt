@@ -1,7 +1,7 @@
-limpar codigo
+limpar código
 menus
 recursão
 aquela cena de meter fork em tudo e ter a main como manager
 forkwiths
 canais partilhados
-documentacao
+documentação
