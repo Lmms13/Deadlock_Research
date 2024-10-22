@@ -1,7 +1,7 @@
 X limpar código
 menus
-recursão
+X recursão (checkar cena do split)
 aquela cena de meter fork em tudo e ter a main como manager
-forkwiths
+~ forkwiths
 canais partilhados
 documentação
