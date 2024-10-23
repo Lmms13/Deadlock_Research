@@ -11,17 +11,23 @@ philosopher id left =
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is eating.");
     left |> select Leave |> close
 
-forkServer : dualof Fork -> dualof Fork
-forkServer (Request f) = let (_,f) = receive f in f
-forkServer (Acquire f) = let f = send () f in f
-forkServer (Leave f) = wait f
+forkServer : dualof Fork -> ()
+forkServer (Request f) = let (_,f) = receive f in forkServer f
+forkServer (Acquire f) = let f = send () f in forkServer f
+forkServer (Leave f) = wait f 
 
 main : ()
 main = 
-    -- let (fw1, fr1) = new @Fork () in
-    -- let (fw2, fr2) = new @Fork () in
-    -- let (fw3, fr3) = new @Fork () in
-    -- fork @() (\_:()1-> philosopher 1 fw1 fr3);
-    -- fork @() (\_:()1-> philosopher 2 fw2 fr1);
-    -- philosopher 3 fw3 fr2;
+    -- forkWith @Fork @() forkServer |> philosopher 1;
+    -- forkWith @Fork @() forkServer |> philosopher 2;
+    -- forkWith @Fork @() forkServer |> philosopher 3;
+    let (fw1, fr1) = new @Fork () in
+    let (fw2, fr2) = new @Fork () in
+    let (fw3, fr3) = new @Fork () in
+    fork @() (\_:()1-> philosopher 1 fw1);
+    fork @() (\_:()1-> forkServer fr3);
+    fork @() (\_:()1-> philosopher 2 fw2);
+    fork @() (\_:()1-> forkServer fr1);
+    fork @() (\_:()1-> philosopher 3 fw3);
+    forkServer fr2;
     print @String "Done!"
