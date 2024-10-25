@@ -1,8 +1,9 @@
 -- type Fork = !();?();Close
 type Fork = +{Request: !();Fork, Acquire: ?();Fork, Leave: Close}
 
-philosopher : Int -> Fork 1-> ()
-philosopher id left = 
+philosopher : Int -> Fork -> dualof Fork 1-> ()
+philosopher id left right = 
+    fork @() (\_:()1-> forkServer right);
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is thinking.");
     let left = select Request left in
     let left = send () left in
@@ -24,10 +25,11 @@ main =
     let (fw1, fr1) = new @Fork () in
     let (fw2, fr2) = new @Fork () in
     let (fw3, fr3) = new @Fork () in
-    fork @() (\_:()1-> philosopher 1 fw1);
-    fork @() (\_:()1-> forkServer fr3);
-    fork @() (\_:()1-> philosopher 2 fw2);
-    fork @() (\_:()1-> forkServer fr1);
-    fork @() (\_:()1-> philosopher 3 fw3);
-    forkServer fr2;
+    fork @() (\_:()1-> philosopher 1 fw1 fr3);
+    -- fork @() (\_:()1-> forkServer fr3);
+    fork @() (\_:()1-> philosopher 2 fw2 fr1);
+    -- fork @() (\_:()1-> forkServer fr1);
+    -- fork @() (\_:()1-> philosopher 3 fw3);
+    philosopher 3 fw3 fr2;
+    -- forkServer fr2;
     print @String "Done!"
