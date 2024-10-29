@@ -1,4 +1,3 @@
--- type Fork = !();?();Close
 type SharedFork = *?Fork
 type Fork = !();?();Close
 
@@ -36,14 +35,12 @@ waiter n w =
         wait c;
         waiter (n-1) w
 
-
 main : ()
 main = 
     -- let w = forkWith @Waiter @() waiter 7 in  
     let (w, r) = new @Waiter () in
     let f1 = forkWith @SharedFork @() forkServer in
     let f2 = forkWith @SharedFork @() forkServer in
-    let f3 = forkWith @SharedFork @() forkServer in
     let f3 = forkWith @SharedFork @() forkServer in
     let f4 = forkWith @SharedFork @() forkServer in
     let f5 = forkWith @SharedFork @() forkServer in
