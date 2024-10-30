@@ -1,67 +1,60 @@
--- type Fork = !();?();Close
-type SharedFork = *?Fork;SharedFork
+type SharedFork = *?Fork
 type Fork = !();?();Close
 
--- type Waiter = *?CheckOut
--- type CheckOut = Close
+type Waiter = *?CheckOut
+type CheckOut = Close
 
-philosopher : Int -> SharedFork -> SharedFork -> ()
-philosopher id left right = 
+philosopher : Int -> Waiter -> SharedFork -> SharedFork -> ()
+philosopher id c l r = 
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is thinking.");
-    -- let c = receive_ @CheckOut c in
-    let l = receive_ @Fork left in
-    let r = receive_ @Fork right in
+    let co = receive_ @CheckOut c in
+    let left = receive_ @Fork l in
+    let right = receive_ @Fork r in
     let left = send () left in
     let right = send () right in
     let (_,left) = receive left in
     let (_,right) = receive right in
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is eating.");
     close left;
-    close right
-    philosopher id l r
+    close right;
+    close co;
+    philosopher id c l r
+
 
 forkServer : dualof SharedFork -> ()
 forkServer sf =
-    let (sf,f) = accept' @Fork sf in
+    let f = accept @Fork sf in
     let (_,f) = receive f in
     let f = send () f in
     wait f;
     forkServer sf
 
-accept' : SharedFork -> (SharedFork, dualof Fork)
-accept' ch =
-    let (x, y) = new @Fork () in
-    let ch = send x ch in
-    (ch, y)
-
--- waiter : Int -> dualof Waiter -> ()
--- waiter n w = 
---     if n == 0
---     then ()
---     else
---         let c = accept @CheckOut w in
---         wait c;
---         waiter (n-1) w
-
+waiter : dualof Waiter -> ()
+waiter w = 
+    let c = accept @CheckOut w in
+    wait c;
+    waiter w
 
 main : ()
 main = 
-    -- let w = forkWith @Waiter @() waiter 7 in  
-    -- let (w, r) = new @Waiter () in
+    -- let w = forkWith @Waiter @() (waiter 7) in  
+    let (w, r) = new @Waiter () in
+    -- fork @() (\_:()1-> waiter 7 r);
     let f1 = forkWith @SharedFork @() forkServer in
     let f2 = forkWith @SharedFork @() forkServer in
-    let f3 = forkWith @SharedFork @() forkServer in
     let f3 = forkWith @SharedFork @() forkServer in
     let f4 = forkWith @SharedFork @() forkServer in
     let f5 = forkWith @SharedFork @() forkServer in
     let f6 = forkWith @SharedFork @() forkServer in
     let f7 = forkWith @SharedFork @() forkServer in
-    fork @() (\_:()1-> philosopher 1 f1 f7);
-    fork @() (\_:()1-> philosopher 2 f2 f1);
-    fork @() (\_:()1-> philosopher 3 f3 f2);
-    fork @() (\_:()1-> philosopher 4 f4 f3);
-    fork @() (\_:()1-> philosopher 5 f5 f4);
-    fork @() (\_:()1-> philosopher 6 f6 f5);
-    -- fork @() (\_:()1-> philosopher 7 w f7 f6);
-    philosopher 7 f7 f6;
-    print @String "Done!"
+    -- print @String "Here!";
+    fork @() (\_:()1-> philosopher 1 w f1 f7);
+    fork @() (\_:()1-> philosopher 2 w f2 f1);
+    fork @() (\_:()1-> philosopher 3 w f3 f2);
+    fork @() (\_:()1-> philosopher 4 w f4 f3);
+    fork @() (\_:()1-> philosopher 5 w f5 f4);
+    fork @() (\_:()1-> philosopher 6 w f6 f5);
+    -- philosopher 7 f7 f6;
+    fork @() (\_:()1-> philosopher 7 w f7 f6);
+    waiter r
+    -- print @String "Done!"

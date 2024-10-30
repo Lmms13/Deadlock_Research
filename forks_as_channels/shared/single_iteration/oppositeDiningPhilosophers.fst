@@ -24,7 +24,8 @@ forkServer sf =
     let f = accept @Fork sf in
     let (_,f) = receive f in
     let f = send () f in
-    wait f
+    wait f;
+    forkServer sf
 
 waiter : Int -> dualof Waiter -> ()
 waiter n w = 
@@ -33,12 +34,14 @@ waiter n w =
     else
         let c = accept @CheckOut w in
         wait c;
+        -- putStrLn ( "Here! " ^^ (show @Int n));
         waiter (n-1) w
 
 main : ()
 main = 
-    -- let w = forkWith @Waiter @() waiter 7 in  
+    -- let w = forkWith @Waiter @() (waiter 7) in  
     let (w, r) = new @Waiter () in
+    -- fork @() (\_:()1-> waiter 7 r);
     let f1 = forkWith @SharedFork @() forkServer in
     let f2 = forkWith @SharedFork @() forkServer in
     let f3 = forkWith @SharedFork @() forkServer in
@@ -46,12 +49,14 @@ main =
     let f5 = forkWith @SharedFork @() forkServer in
     let f6 = forkWith @SharedFork @() forkServer in
     let f7 = forkWith @SharedFork @() forkServer in
+    -- print @String "Here!";
     fork @() (\_:()1-> philosopher 1 w f1 f7);
     fork @() (\_:()1-> philosopher 2 w f2 f1);
     fork @() (\_:()1-> philosopher 3 w f3 f2);
     fork @() (\_:()1-> philosopher 4 w f4 f3);
     fork @() (\_:()1-> philosopher 5 w f5 f4);
     fork @() (\_:()1-> philosopher 6 w f6 f5);
+    -- philosopher 7 f7 f6;
     fork @() (\_:()1-> philosopher 7 w f7 f6);
-    waiter 7 r;
-    print @String "Done!"
+    waiter 7 r
+    -- print @String "Done!"
