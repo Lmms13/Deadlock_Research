@@ -5,10 +5,8 @@ philosopher : Int -> Fork -> dualof Fork 1-> ()
 philosopher id left right = 
     fork @() (\_:()1-> forkServer right);
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is thinking.");
-    let left = select Request left in
-    let left = send () left in
-    let left = select Acquire left in
-    let (_,left) = receive left in
+    let left = left |> select Request |> send () in
+    let (_,left) = left |> select Acquire |> receive in 
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is eating.");
     left |> select Leave |> close
 

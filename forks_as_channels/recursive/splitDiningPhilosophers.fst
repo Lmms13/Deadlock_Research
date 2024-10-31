@@ -1,3 +1,5 @@
+--this one doesn't work
+
 type Fork = !();?();!();Fork
 
 philosopher : Int -> Fork -> dualof Fork 1-> ()
