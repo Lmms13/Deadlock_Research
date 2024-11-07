@@ -60,7 +60,7 @@ main =
     fork @() (\_:()1-> philosopher 17 f17 f16);
     fork @() (\_:()1-> philosopher 18 f18 f17);
     fork @() (\_:()1-> philosopher 19 f19 f18);
-    philosopher 20 f20 f19;
+    philosopher 20 f19 f20; --swapped the order of the forks
     print @String "Done!"
 
 -- for ($i = 0; $i -lt 1000; $i++) {}

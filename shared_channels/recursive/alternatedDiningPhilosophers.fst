@@ -5,6 +5,7 @@ type Waiter = *!()
 
 philosopher : Int -> SharedFork -> SharedFork -> ()
 philosopher id left right = 
+    checkOdd id;
     let l = receive_ @Fork left in
     putStrLn $ "Philosopher " ^^ (show @Int id) ^^ " acquired left fork.";
     let r = receive_ @Fork right in
@@ -12,6 +13,12 @@ philosopher id left right =
     close l;
     close r;
     philosopher id left right
+
+checkOdd : Int -> ()
+checkOdd n = if not (even n) then wait' 500 else () 
+
+wait' : Int -> ()
+wait' n = if n == 0 then () else wait' (n-1)
 
 forkServer : dualof SharedFork -> ()
 forkServer sf =

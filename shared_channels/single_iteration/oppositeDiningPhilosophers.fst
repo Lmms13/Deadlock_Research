@@ -70,6 +70,6 @@ main =
     fork @() (\_:()1-> philosopher 17 w f17 f16);
     fork @() (\_:()1-> philosopher 18 w f18 f17);
     fork @() (\_:()1-> philosopher 19 w f19 f18);
-    fork @() (\_:()1-> philosopher 20 w f20 f19);
+    fork @() (\_:()1-> philosopher 20 w f19 f20); --swapped the order of the forks
     waiter 20 r;
     print @String "Done!"
