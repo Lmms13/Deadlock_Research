@@ -34,7 +34,6 @@ gatekeeper w n id c left right =
     fork @() (\_:()1-> philosopher id c left right);
     waiter (n-1) w
     --I have both n and id here because they may not always be the same
-    --here, I'm delaying the 20th philosopher, but it could be any philosopher 
 
 main : ()
 main =   
