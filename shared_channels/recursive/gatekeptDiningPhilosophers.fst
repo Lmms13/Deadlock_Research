@@ -3,19 +3,25 @@ type Fork = Close
 
 type Waiter = *!()
 
-philosopher : Int -> Waiter -> SharedFork -> SharedFork -> ()
-philosopher id c left right = 
+philosopher : Int -> SharedFork -> SharedFork -> ()
+philosopher id left right = 
     let l = receive_ @Fork left in
     putStrLn $ "Philosopher " ^^ (show @Int id) ^^ " acquired left fork.";
     let r = receive_ @Fork right in
     putStrLn $ "Philosopher " ^^ (show @Int id) ^^ " is eating.";
     close l;
-    close r;
-    if id == 1 then
-        send () c; 
-        philosopher id c left right
-    else
-        philosopher id c left right
+    close r
+
+recPhilosopher : Int -> SharedFork -> SharedFork -> ()
+recPhilosopher id left right = 
+    philosopher id left right;
+    recPhilosopher id left right
+
+leadingPhilosopher : Int -> Waiter -> SharedFork -> SharedFork -> ()
+leadingPhilosopher id c left right = 
+    philosopher id left right;
+    send () c;
+    recPhilosopher id left right
 
 forkServer : dualof SharedFork -> ()
 forkServer sf =
@@ -23,10 +29,10 @@ forkServer sf =
     wait f;
     forkServer sf
 
-gatekeeper : dualof Waiter -> Int -> Waiter -> SharedFork -> SharedFork -> ()
+gatekeeper : dualof Waiter -> Int -> Waiter -> SharedFork -> SharedFork 1-> ()
 gatekeeper w id c left right = 
     receive w;
-    philosopher id c left right
+    recPhilosopher id left right
 
 main : ()
 main = 
@@ -51,27 +57,27 @@ main =
     let f18 = forkWith @SharedFork @() forkServer in
     let f19 = forkWith @SharedFork @() forkServer in
     let f20 = forkWith @SharedFork @() forkServer in
-    fork @() (\_:()1-> philosopher 1 w f1 f20);
-    fork @() (\_:()1-> philosopher 2 w f2 f1);
-    fork @() (\_:()1-> philosopher 3 w f3 f2);
-    fork @() (\_:()1-> philosopher 4 w f4 f3);
-    fork @() (\_:()1-> philosopher 5 w f5 f4);
-    fork @() (\_:()1-> philosopher 6 w f6 f5);
-    fork @() (\_:()1-> philosopher 7 w f7 f6);
-    fork @() (\_:()1-> philosopher 8 w f8 f7);
-    fork @() (\_:()1-> philosopher 9 w f9 f8);
-    fork @() (\_:()1-> philosopher 10 w f10 f9);
-    fork @() (\_:()1-> philosopher 11 w f11 f10);
-    fork @() (\_:()1-> philosopher 12 w f12 f11);
-    fork @() (\_:()1-> philosopher 13 w f13 f12);
-    fork @() (\_:()1-> philosopher 14 w f14 f13);
-    fork @() (\_:()1-> philosopher 15 w f15 f14);
-    fork @() (\_:()1-> philosopher 16 w f16 f15);
-    fork @() (\_:()1-> philosopher 17 w f17 f16);
-    fork @() (\_:()1-> philosopher 18 w f18 f17);
-    fork @() (\_:()1-> philosopher 19 w f19 f18);
-    -- philosopher 20 f20 f19;
-    gatekeeper r 20 w f20 f19;
+    fork @() (\_:()1-> leadingPhilosopher 1 w f1 f20);
+    fork @() (\_:()1-> recPhilosopher 2 f2 f1);
+    fork @() (\_:()1-> recPhilosopher 3 f3 f2);
+    fork @() (\_:()1-> recPhilosopher 4 f4 f3);
+    fork @() (\_:()1-> recPhilosopher 5 f5 f4);
+    fork @() (\_:()1-> recPhilosopher 6 f6 f5);
+    fork @() (\_:()1-> recPhilosopher 7 f7 f6);
+    fork @() (\_:()1-> recPhilosopher 8 f8 f7);
+    fork @() (\_:()1-> recPhilosopher 9 f9 f8);
+    fork @() (\_:()1-> recPhilosopher 10 f10 f9);
+    fork @() (\_:()1-> recPhilosopher 11 f11 f10);
+    fork @() (\_:()1-> recPhilosopher 12 f12 f11);
+    fork @() (\_:()1-> recPhilosopher 13 f13 f12);
+    fork @() (\_:()1-> recPhilosopher 14 f14 f13);
+    fork @() (\_:()1-> recPhilosopher 15 f15 f14);
+    -- fork @() (\_:()1-> philosopher 16 w f16 f15);
+    fork @() (\_:()1-> recPhilosopher 17 f17 f16);
+    fork @() (\_:()1-> recPhilosopher 18 f18 f17);
+    fork @() (\_:()1-> recPhilosopher 19 f19 f18);
+    fork @() (\_:()1-> recPhilosopher 20 f20 f19);
+    gatekeeper r 16 w f16 f15;
     print @String "Done!"
 
 -- for ($i = 0; $i -lt 1000; $i++) {}
