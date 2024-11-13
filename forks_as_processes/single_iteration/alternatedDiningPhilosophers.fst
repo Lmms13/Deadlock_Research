@@ -46,9 +46,9 @@ main =
     fork @() (\_ : () 1-> fork_ f7 f8);
     fork @() (\_ : () 1-> fork_ f9 f10);
     fork @() (\_ : () 1-> philosopher 1 p1 p10);
-    fork @() (\_ : () 1-> philosopher 2 p2 p3);
-    fork @() (\_ : () 1-> philosopher 3 p4 p5);
-    fork @() (\_ : () 1-> philosopher 4 p6 p7);
-    philosopher 5 p8 p9;
+    fork @() (\_ : () 1-> philosopher 2 p3 p2);
+    fork @() (\_ : () 1-> philosopher 3 p5 p4);
+    fork @() (\_ : () 1-> philosopher 4 p7 p6);
+    philosopher 5 p9 p8;
     print @String "Done!"
 

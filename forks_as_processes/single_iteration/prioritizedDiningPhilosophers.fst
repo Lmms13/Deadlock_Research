@@ -40,7 +40,7 @@ main =
     fork @() (\_ : () 1-> fork_ f4 f3);
     fork @() (\_ : () 1-> fork_ f6 f5);
     fork @() (\_ : () 1-> philosopher 1 p1 p6);
-    fork @() (\_ : () 1-> philosopher 2 p2 p3);
-    philosopher 3 p4 p5;
+    fork @() (\_ : () 1-> philosopher 2 p3 p2);
+    philosopher 3 p5 p4;
     print @String "Done!"
 
