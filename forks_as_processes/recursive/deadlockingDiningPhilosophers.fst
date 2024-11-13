@@ -12,7 +12,7 @@ philosopher id left right =
     let right = send () right in
     philosopher id left right
 
-fork_ :dualof ForkExchange -> dualof ForkExchange 1-> ()
+fork_ : dualof ForkExchange -> dualof ForkExchange 1-> ()
 fork_ left right =
     let (_,right) = receive right in
     let right = send () right in

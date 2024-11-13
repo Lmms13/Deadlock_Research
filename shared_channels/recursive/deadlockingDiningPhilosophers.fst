@@ -1,8 +1,6 @@
 type SharedFork = *?Fork
 type Fork = Close
 
-type Waiter = *!()
-
 philosopher : Int -> SharedFork -> SharedFork -> ()
 philosopher id left right = 
     let l = receive_ @Fork left in
