@@ -7,12 +7,17 @@ philosopher : Int -> Waiter -> SharedFork -> SharedFork -> ()
 philosopher id c left right = 
     let left = receive_ @Fork left in
     putStrLn $ "Philosopher " ^^ (show @Int id) ^^ " acquired left fork.";
+    -- wait' 40000;
+    --eihter version works, I'll keep the print version because it's faster
     let right = receive_ @Fork right in
     putStrLn $ "Philosopher " ^^ (show @Int id) ^^ " is eating.";
     close left;
     close right;
     send () c; 
     ()
+
+wait' : Int -> ()
+wait' n = if n == 0 then () else wait' (n-1)
 
 forkServer : dualof SharedFork -> ()
 forkServer sf =

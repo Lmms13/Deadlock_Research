@@ -1,3 +1,5 @@
+import List
+
 type SharedFork = *?Fork
 type Fork = Close
 
@@ -5,7 +7,6 @@ type Waiter = *!()
 
 philosopher : Int -> Waiter -> SharedFork -> SharedFork -> ()
 philosopher id c left right = 
-    checkOdd id;
     let left = receive_ @Fork left in
     putStrLn $ "Philosopher " ^^ (show @Int id) ^^ " acquired left fork.";
     let right = receive_ @Fork right in
@@ -15,25 +16,53 @@ philosopher id c left right =
     send () c; 
     ()
 
-checkOdd : Int -> ()
-checkOdd n = if odd n then wait' 500 else () 
-
-wait' : Int -> ()
-wait' n = if n == 0 then () else wait' (n-1)
-
 forkServer : dualof SharedFork -> ()
 forkServer sf =
     let f = accept @Fork sf in
     wait f;
     forkServer sf
 
-waiter : Int -> dualof Waiter -> ()
-waiter n w = 
-    if n == 0
-    then ()
+-- waiter : Int -> dualof Waiter -> ()
+-- waiter n w = 
+--     if n == 0
+--     then ()
+--     else
+--         receive w;
+--         waiter (n-1) w
+
+-- gatekeeper : dualof Waiter -> Int -> Int -> Waiter -> SharedFork -> SharedFork -> ()
+-- gatekeeper w n id c left right = 
+--     receive w;
+--     fork @() (\_:()1-> philosopher id c left right);
+--     waiter (n-1) w
+--     --I have both n and id here because they may not always be the same
+
+waiter : Int -> [SharedFork] -> Waiter -> dualof Waiter -> ()
+waiter n forks w r = 
+    let len = length forks in
+    if len == 0
+    then 
+        if n == 0
+        then 
+            ()
+        else
+        receive r;
+        waiter (n-1) [] w r
     else
-        receive w;
-        waiter (n-1) w
+        if n == 1
+        then 
+            fork @() (\_:()1-> philosopher n w (head forks) (last forks));
+            waiter (n+1) (tail (init forks)) w r
+        else
+            if len == 2
+            then 
+                receive r;
+                fork @() (\_:()1-> philosopher n w (head forks) (head (tail forks)));
+                waiter (n+1) (tail(tail forks)) w r
+            else
+                fork @() (\_:()1-> philosopher n w (head forks) (head (tail forks)));
+                waiter (n+1) (tail(tail forks)) w r
+
 
 main : ()
 main =   
@@ -58,25 +87,7 @@ main =
     let f18 = forkWith @SharedFork @() forkServer in
     let f19 = forkWith @SharedFork @() forkServer in
     let f20 = forkWith @SharedFork @() forkServer in
-    fork @() (\_:()1-> philosopher 1 w f1 f20);
-    fork @() (\_:()1-> philosopher 2 w f2 f1);
-    fork @() (\_:()1-> philosopher 3 w f3 f2);
-    fork @() (\_:()1-> philosopher 4 w f4 f3);
-    fork @() (\_:()1-> philosopher 5 w f5 f4);
-    fork @() (\_:()1-> philosopher 6 w f6 f5);
-    fork @() (\_:()1-> philosopher 7 w f7 f6);
-    fork @() (\_:()1-> philosopher 8 w f8 f7);
-    fork @() (\_:()1-> philosopher 9 w f9 f8);
-    fork @() (\_:()1-> philosopher 10 w f10 f9);
-    fork @() (\_:()1-> philosopher 11 w f11 f10);
-    fork @() (\_:()1-> philosopher 12 w f12 f11);
-    fork @() (\_:()1-> philosopher 13 w f13 f12);
-    fork @() (\_:()1-> philosopher 14 w f14 f13);
-    fork @() (\_:()1-> philosopher 15 w f15 f14);
-    fork @() (\_:()1-> philosopher 16 w f16 f15);
-    fork @() (\_:()1-> philosopher 17 w f17 f16);
-    fork @() (\_:()1-> philosopher 18 w f18 f17);
-    fork @() (\_:()1-> philosopher 19 w f19 f18);
-    fork @() (\_:()1-> philosopher 20 w f20 f19);
-    waiter 20 r;
+    let l = [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, 
+        f12, f13, f14, f15, f16, f17, f18, f19, f20] in
+    waiter 1 l w r;
     print @String "Done!"

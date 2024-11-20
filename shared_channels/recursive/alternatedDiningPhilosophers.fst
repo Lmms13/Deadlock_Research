@@ -15,7 +15,7 @@ philosopher id left right =
     philosopher id left right
 
 checkOdd : Int -> ()
-checkOdd n = if not (even n) then wait' 500 else () 
+checkOdd n = if odd n then wait' 500 else () 
 
 wait' : Int -> ()
 wait' n = if n == 0 then () else wait' (n-1)

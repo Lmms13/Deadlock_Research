@@ -5,12 +5,12 @@ type Waiter = *!()
 
 philosopher : Int -> SharedFork -> SharedFork -> ()
 philosopher id left right = 
-    let l = receive_ @Fork left in
+    let left = receive_ @Fork left in
     putStrLn $ "Philosopher " ^^ (show @Int id) ^^ " acquired left fork.";
-    let r = receive_ @Fork right in
+    let right = receive_ @Fork right in
     putStrLn $ "Philosopher " ^^ (show @Int id) ^^ " is eating.";
-    close l;
-    close r
+    close left;
+    close right
 
 recPhilosopher : Int -> SharedFork -> SharedFork -> ()
 recPhilosopher id left right = 
