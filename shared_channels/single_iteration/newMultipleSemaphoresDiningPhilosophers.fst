@@ -1,38 +1,31 @@
+import Semaphore
+
 type SharedFork = *?Fork
 type Fork = Close
 
 type Waiter = *!()
 
-type Semaphore = *?Mutex
-type Mutex = Close
-
-
 philosopher : Int -> Waiter -> SharedFork -> SharedFork -> Semaphore -> Semaphore -> ()
 philosopher id waiter left right leftSem rightSem  =
-    let leftSem = receive_ @Mutex leftSem in
-    
-    let rightSem = receive_ @Mutex rightSem in
-    let left = receive_ @Fork left in
-    putStrLn $ "Philosopher " ^^ (show @Int id) ^^ " acquired left fork.";
-    -- sleep 40000;
-    --either version works, I'll keep the print version because it's faster
-    let right = receive_ @Fork right in
-    putStrLn $ "Philosopher " ^^ (show @Int id) ^^ " is eating.";
-    close left;
-    close right;
-    close leftSem;
-    close rightSem;
-    send () waiter; 
-    ()
-
-sleep : Int -> ()
-sleep n = if n == 0 then () else sleep (n-1)
-
-semaphore : dualof Semaphore -> ()
-semaphore s = 
-    let sem = accept @Mutex s in
-    wait sem;
-    semaphore s
+    match leftSem |> receive_ @Sem |> select SemWait with {
+        Go sl ->
+            match rightSem |> receive_ @Sem |> select SemWait with {
+                Go sr ->
+                    let left = receive_ @Fork left in
+                    putStrLn $ "Philosopher " ^^ (show @Int id) ^^ " acquired left fork.";
+                    let right = receive_ @Fork right in
+                    wait sl;
+                    wait sr;
+                    putStrLn $ "Philosopher " ^^ (show @Int id) ^^ " is eating.";
+                    -- sleep 1000;
+                    close left;
+                    close right;
+                    receive_ @Sem leftSem |> select SemSignal |> wait;
+                    receive_ @Sem rightSem |> select SemSignal |> wait;
+                    send () waiter;
+                    () 
+            }
+    }
 
 forkServer : dualof SharedFork -> ()
 forkServer sf =
@@ -71,26 +64,26 @@ main =
     let f18 = forkWith @SharedFork @() forkServer in
     let f19 = forkWith @SharedFork @() forkServer in
     let f20 = forkWith @SharedFork @() forkServer in
-    let s1 = forkWith @Semaphore @() semaphore in
-    let s2 = forkWith @Semaphore @() semaphore in
-    let s3 = forkWith @Semaphore @() semaphore in
-    let s4 = forkWith @Semaphore @() semaphore in
-    let s5 = forkWith @Semaphore @() semaphore in
-    let s6 = forkWith @Semaphore @() semaphore in
-    let s7 = forkWith @Semaphore @() semaphore in
-    let s8 = forkWith @Semaphore @() semaphore in
-    let s9 = forkWith @Semaphore @() semaphore in
-    let s10 = forkWith @Semaphore @() semaphore in
-    let s11 = forkWith @Semaphore @() semaphore in
-    let s12 = forkWith @Semaphore @() semaphore in
-    let s13 = forkWith @Semaphore @() semaphore in
-    let s14 = forkWith @Semaphore @() semaphore in
-    let s15 = forkWith @Semaphore @() semaphore in
-    let s16 = forkWith @Semaphore @() semaphore in
-    let s17 = forkWith @Semaphore @() semaphore in
-    let s18 = forkWith @Semaphore @() semaphore in
-    let s19 = forkWith @Semaphore @() semaphore in
-    let s20 = forkWith @Semaphore @() semaphore in
+    let s1 = launchSemServer 1 in
+    let s2 = launchSemServer 1 in
+    let s3 = launchSemServer 1 in
+    let s4 = launchSemServer 1 in
+    let s5 = launchSemServer 1 in
+    let s6 = launchSemServer 1 in
+    let s7 = launchSemServer 1 in
+    let s8 = launchSemServer 1 in
+    let s9 = launchSemServer 1 in
+    let s10 = launchSemServer 1 in
+    let s11 = launchSemServer 1 in
+    let s12 = launchSemServer 1 in
+    let s13 = launchSemServer 1 in
+    let s14 = launchSemServer 1 in
+    let s15 = launchSemServer 1 in
+    let s16 = launchSemServer 1 in
+    let s17 = launchSemServer 1 in
+    let s18 = launchSemServer 1 in
+    let s19 = launchSemServer 1 in
+    let s20 = launchSemServer 1 in
     fork @() (\_:()1-> philosopher 1 w f1 f20 s1 s20);
     fork @() (\_:()1-> philosopher 2 w f2 f1 s2 s1);
     fork @() (\_:()1-> philosopher 3 w f3 f2 s3 s2);
