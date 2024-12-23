@@ -1,6 +1,6 @@
-type ForkExchange = !Int;?();!();ForkExchange
+type Hand = !Int;?();!();Hand
 
-philosopher : Int -> ForkExchange 1-> ForkExchange 1-> ()
+philosopher : Int -> Hand 1-> Hand 1-> ()
 philosopher id left right =
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is thinking.");
     let left = send id left in
@@ -12,7 +12,7 @@ philosopher id left right =
     let right = send () right in
     philosopher id left right
 
-fork_ : dualof ForkExchange -> dualof ForkExchange 1-> ()
+fork_ : dualof Hand -> dualof Hand 1-> ()
 fork_ left right =
     let (id,right) = receive right in
     let (_,left) = receive left in
@@ -26,7 +26,7 @@ fork_ left right =
         let left = unitaryFork left in
         fork_ left right
 
-unitaryFork : !();?();dualof ForkExchange -> dualof ForkExchange
+unitaryFork : !();?();dualof Hand -> dualof Hand
 unitaryFork f =
     let f = send () f in
     let (_, f) = receive f in
@@ -34,16 +34,16 @@ unitaryFork f =
 
 main : ()
 main =
-    let (p1, f1) = new @ForkExchange () in
-    let (p2, f2) = new @ForkExchange () in
-    let (p3, f3) = new @ForkExchange () in
-    let (p4, f4) = new @ForkExchange () in
-    let (p5, f5) = new @ForkExchange () in
-    let (p6, f6) = new @ForkExchange () in
-    let (p7, f7) = new @ForkExchange () in
-    let (p8, f8) = new @ForkExchange () in
-    let (p9, f9) = new @ForkExchange () in
-    let (p10, f10) = new @ForkExchange () in
+    let (p1, f1) = new @Hand () in
+    let (p2, f2) = new @Hand () in
+    let (p3, f3) = new @Hand () in
+    let (p4, f4) = new @Hand () in
+    let (p5, f5) = new @Hand () in
+    let (p6, f6) = new @Hand () in
+    let (p7, f7) = new @Hand () in
+    let (p8, f8) = new @Hand () in
+    let (p9, f9) = new @Hand () in
+    let (p10, f10) = new @Hand () in
     fork @() (\_ : () 1-> fork_ f1 f2);
     fork @() (\_ : () 1-> fork_ f3 f4);
     fork @() (\_ : () 1-> fork_ f5 f6);
