@@ -1,14 +1,11 @@
-send: ! T;S  ->  T  ->  S
-receive: ? T;S  ->  T×S
-
-type X = ! ();X
-type Y = ! ();Y
+type X = !();X
+type Y = !();Y
 
 server : dualof X -> Y 1-> ()
 server x y = 
     let (_,x) = receive x in
     let y = send () y in
-    server x y 
+    server x y
 
 client : X -> dualof Y 1-> ()
 client x y = 
