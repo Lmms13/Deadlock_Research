@@ -40,15 +40,15 @@ main =
     let (p8, f8) = new @ForkExchange () in
     let (p9, f9) = new @ForkExchange () in
     let (p10, f10) = new @ForkExchange () in
-    fork @() (\_ : () 1-> fork_ f1 f2);
-    fork @() (\_ : () 1-> fork_ f3 f4);
-    fork @() (\_ : () 1-> fork_ f5 f6);
-    fork @() (\_ : () 1-> fork_ f7 f8);
-    fork @() (\_ : () 1-> fork_ f9 f10);
+    fork @() (\_ : () 1-> fork_ f2 f1);
+    fork @() (\_ : () 1-> fork_ f4 f3);
+    fork @() (\_ : () 1-> fork_ f6 f5);
+    fork @() (\_ : () 1-> fork_ f8 f7);
+    fork @() (\_ : () 1-> fork_ f10 f9);
     fork @() (\_ : () 1-> philosopher 1 p1 p10);
     fork @() (\_ : () 1-> philosopher 2 p3 p2);
     fork @() (\_ : () 1-> philosopher 3 p5 p4);
+    philosopher 4 p7 p6
     fork @() (\_ : () 1-> philosopher 4 p7 p6);
-    philosopher 5 p9 p8;
     print @String "Done!"
 

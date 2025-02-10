@@ -15,10 +15,10 @@ philosopher id left right =
     philosopher id left right
 
 checkOdd : Int -> ()
-checkOdd n = if odd n then wait' 500 else () 
+checkOdd n = if odd n then sleep 500 else () 
 
-wait' : Int -> ()
-wait' n = if n == 0 then () else wait' (n-1)
+sleep : Int -> ()
+sleep n = if n == 0 then () else sleep (n-1)
 
 forkServer : dualof SharedFork -> ()
 forkServer sf =
