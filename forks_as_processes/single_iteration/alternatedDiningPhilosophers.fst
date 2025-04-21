@@ -1,6 +1,6 @@
-type ForkExchange = !Int;?();Close
+type Hand = !Int;?();Close
 
-philosopher : Int -> ForkExchange 1-> ForkExchange 1-> ()
+philosopher : Int -> Hand 1-> Hand 1-> ()
 philosopher id left right =
     putStrLn ( "Philosopher " ^^ (show @Int id) ^^ " is thinking.");
     let left = send id left in
@@ -11,17 +11,17 @@ philosopher id left right =
     close left;
     close right
 
-fork_ : dualof ForkExchange -> dualof ForkExchange 1-> ()
+fork_ : dualof Hand -> dualof Hand 1-> ()
 fork_ left right =
     let (id,right) = receive right in
     let (_,left) = receive left in
     if(even id) 
     then
-        unitaryFork right;
-        unitaryFork left
-    else
         unitaryFork left;
         unitaryFork right
+    else
+        unitaryFork right;
+        unitaryFork left
 
 unitaryFork : !();Wait -> ()
 unitaryFork f =
@@ -30,25 +30,21 @@ unitaryFork f =
 
 main : ()
 main =
-    let (p1, f1) = new @ForkExchange () in
-    let (p2, f2) = new @ForkExchange () in
-    let (p3, f3) = new @ForkExchange () in
-    let (p4, f4) = new @ForkExchange () in
-    let (p5, f5) = new @ForkExchange () in
-    let (p6, f6) = new @ForkExchange () in
-    let (p7, f7) = new @ForkExchange () in
-    let (p8, f8) = new @ForkExchange () in
-    let (p9, f9) = new @ForkExchange () in
-    let (p10, f10) = new @ForkExchange () in
+    let (p1, f1) = new @Hand () in
+    let (p2, f2) = new @Hand () in
+    let (p3, f3) = new @Hand () in
+    let (p4, f4) = new @Hand () in
+    let (p5, f5) = new @Hand () in
+    let (p6, f6) = new @Hand () in
+    let (p7, f7) = new @Hand () in
+    let (p8, f8) = new @Hand () in
     fork @() (\_ : () 1-> fork_ f2 f1);
     fork @() (\_ : () 1-> fork_ f4 f3);
     fork @() (\_ : () 1-> fork_ f6 f5);
     fork @() (\_ : () 1-> fork_ f8 f7);
-    fork @() (\_ : () 1-> fork_ f10 f9);
-    fork @() (\_ : () 1-> philosopher 1 p1 p10);
+    fork @() (\_ : () 1-> philosopher 1 p1 p8);
     fork @() (\_ : () 1-> philosopher 2 p3 p2);
     fork @() (\_ : () 1-> philosopher 3 p5 p4);
-    philosopher 4 p7 p6
-    fork @() (\_ : () 1-> philosopher 4 p7 p6);
+    philosopher 4 p7 p6;
     print @String "Done!"
 
